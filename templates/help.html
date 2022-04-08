@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} (help){% endblock %}</h1>
+
+    <h2>Team ID</h2>
+    This should be the ID for the team in OneFootball.<br/>
+    For example, <a href="https://onefootball.com/en/team/atletico-mineiro-1683">https://onefootball.com/en/team/atletico-mineiro-1683</a> goes to the Atlético-MG page.<br/>
+    From this URL, we learn the ID for Atlético is "atletico-mineiro-1683".
+
+    <h2>Event Length</h2>
+    You can use this option to decide how long each match should be in your calendar.<br/>
+    By default, we use 120 minutes for each calendar event. If you want to use this length, you don't need to include it in your URLs.
+
+    <h2>Calendar Integration</h2>
+    After you have your team ID and know your event length, you can use the following template to use it in your calendar:<br/>
+    {{ url_for('create_team_calendar', team_id='TEAM_ID', event_length='EVENT_LENGTH', _external=True)}}<br/>
+    <br/>
+    For example, to get the calendar for Atlético's schedule with the default event length you can use:<br/>
+    <a href="{{ url_for('create_team_calendar', team_id='atletico-mineiro-1683', _external=True)}}">{{ url_for('create_team_calendar', team_id='atletico-mineiro-1683', _external=True)}}</a><br/>
+    <br/>
+    Alternatively, you can download the .ics file and manually import it to your calendar.<br/>
+    However, that will not automatically be updated, like the URL should be.
+{% endblock %}

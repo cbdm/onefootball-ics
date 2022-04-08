@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post">
+        <label for="title">Enter a team id: </label>
+        <input type="text" name="team_id"
+               placeholder="atletico-mineiro-1683"
+               value="{{ request.form['team_id'] }}"></input>
+        <br/>
+        <label for="title">Enter the desired event length: </label>
+        <input type="text" name="event_length"
+               placeholder="120"
+               value="{{ request.form['event_length'] }}"></input>
+        <br/><br/>
+        <input type ="submit" name="action" value="Get Calendar">
+    </form>
+{% endblock %}

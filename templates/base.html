@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block head%} {% endblock %}
+    <title>OneFootball to ICS{% block title %} {% endblock %}</title>
+    <style>
+        .website_title {
+            color: #009129;
+            font-size: 3em;
+            text-decoration: none;
+        }
+
+        .nav_bar {
+            color: #555555;
+            font-size: 2em;
+            margin-left: 75px;
+            text-decoration: none;
+        }
+
+        h2 {
+            color: #3a7d41;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 5px;
+            background-color: #f3f3f3
+        }
+
+        .alert {
+            font-size: large;
+            color: #ff0000;
+            border-color: #555555;
+            border-width: 5px;
+            border-style: solid;
+            width: 425px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a class="website_title" href="{{ url_for('index') }}">OneFootball to ICS</a>
+        <a class="nav_bar" href="{{ url_for('help') }}">help</a>
+    </nav>
+    <hr>
+    <div class="content">
+        {% for message in get_flashed_messages() %}
+            <div class="alert">{{ message }}</div>
+        {% endfor %}
+        {% block content %} {% endblock %}
+    </div>
+</body>
+</html>
