@@ -3,6 +3,7 @@ from onefootball2ics import main as create_ics
 from os import getenv
 from datetime import timedelta
 from redis import Redis
+from flask_talisman import Talisman
 
 app = Flask(__name__)
 app.debug = True
@@ -49,6 +50,9 @@ def create_team_calendar(team_id, event_length='120'):
     response.headers["Content-Disposition"] = "attachment; filename=calendar.ics"
     return response
 
+
+# Wrap Flask app with Talisman
+Talisman(app, content_security_policy=None)
 
 if __name__ == '__main__':
     # Threaded option to enable multiple instances for multiple user access support
