@@ -2,12 +2,18 @@
 
 {% block content %}
     <form method="post">
-        <label for="title">Enter a team id: </label>
-        <input type="text" name="team_id"
-               placeholder="atletico-mineiro-1683"
-               value="{{ request.form['team_id'] }}"></input>
+        <label for="calendar_type">Calendar Type: </label>
+        <select name="calendar_type" id="calendar_type">
+            <option value="team">Team</option>
+            <option value="competition">Competition</option>
+          </select>
         <br/>
-        <label for="title">Enter the desired event length: </label>
+        <label for="onefootball_id">OneFootball ID: </label>
+        <input type="text" name="onefootball_id"
+               placeholder="atletico-mineiro-1683"
+               value="{{ request.form['onefootball_id'] }}"></input>
+        <br/>
+        <label for="event_length">Event Length: </label>
         <input type="text" name="event_length"
                placeholder="120"
                value="{{ request.form['event_length'] }}"></input>

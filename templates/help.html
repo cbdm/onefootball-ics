@@ -3,10 +3,13 @@
 {% block content %}
     <h1>{% block title %} (help){% endblock %}</h1>
 
-    <h2>Team ID</h2>
-    This should be the ID for the team in OneFootball.<br/>
-    First, go to <a href="https://onefootball.com">onefootball.com</a> and find the team on the search bar.<br/>
-    Then, when you're on the team's page, you can find the team ID on the URL.<br/>
+    <h2>Calendar Type</h2>
+    This defines if the calendar you want is for a team or a competition.
+
+    <h2>OneFootball ID</h2>
+    This should be the ID for the team/competition in OneFootball.<br/>
+    First, go to <a href="https://onefootball.com">onefootball.com</a> and find the team or competition you want on the search bar.<br/>
+    Then, when you're on the main page for the team/competition, you can find the ID on the URL.<br/>
     <br/>
     For example, <a href="https://onefootball.com/en/team/atletico-mineiro-1683">https://onefootball.com/en/team/atletico-mineiro-1683</a> goes to the Atlético-MG page.<br/>
     From this URL, we learn the ID for Atlético is "atletico-mineiro-1683".
@@ -16,9 +19,11 @@
     By default, we use 120 minutes for each calendar event. If you want to use this length, you don't need to include it in your URLs.
 
     <h2>Calendar Integration</h2>
-    After you have your team ID and know your event length, you can use the following template to use it in your calendar:<br/>
-    {{ url_for('create_team_calendar', team_id='TEAM_ID', event_length='EVENT_LENGTH', _external=True)}}<br/>
-    <br/>
+    After you have your OneFootball ID and know your event length, you can use the following URL templates to add it to your calendar:<br/>
+    <ul>
+        <li>For a team calendar: {{ url_for('create_team_calendar', team_id='ONEFOOTBALL_ID', event_length='EVENT_LENGTH', _external=True)}}</li>
+        <li>For a competition calendar: {{ url_for('create_competition_calendar', comp_id='ONEFOOTBALL_ID', event_length='EVENT_LENGTH', _external=True)}}</li>
+    </ul>
     For example, to get the calendar for Atlético's schedule with the default event length you can use:<br/>
     <a href="{{ url_for('create_team_calendar', team_id='atletico-mineiro-1683', _external=True)}}">{{ url_for('create_team_calendar', team_id='atletico-mineiro-1683', _external=True)}}</a><br/>
     <br/>

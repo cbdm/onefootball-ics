@@ -32,16 +32,19 @@ class Match(object):
         return f'[{self.tournament}] {self.team1} - {self.team2} @ {self.datetime}'
 
 
-def get_page(team_id):
-    '''Request the fixtures page from onefootball for the desired team.'''
-    url = f'https://onefootball.com/en/team/{team_id}/fixtures'
+def get_page(is_team, of_id):
+    '''Request the fixtures page from onefootball for the desired team/competition.'''
+    if is_team:
+        url = f'https://onefootball.com/en/team/{of_id}/fixtures'
+    else:
+        url = f'https://onefootball.com/en/competition/{of_id}/fixtures'
     resp = get(url)
     if resp.status_code != 200:
         raise Exception(f"Could not sucessfully fetch '{url}'")
     return resp.text
 
 
-def get_matches(soup):
+def get_matches(is_team, soup):
     '''Find and parse all match cards in the page.'''
 
     def _get_match_datetime(simple_match_card):
@@ -75,6 +78,10 @@ def get_matches(soup):
         content = simple_match_card.find('footer')
         return content.find('p').text.strip()
 
+    # Check if it's a competition calendar, if it is, let's find out the name.
+    if not is_team:
+        tournament = soup.find('p', {'class': 'title-2-bold'}).text.strip()
+    
     # Finds all the match cards in the website.
     matches = soup.find_all('li', {'class': 'simple-match-cards-list__match-card'})
     # Process each match card individually and create a list of new matches.
@@ -82,7 +89,8 @@ def get_matches(soup):
     for match in matches:
         match_time = _get_match_datetime(match)
         team1, team2 = _get_match_teams(match)
-        tournament = _get_match_tournament(match)
+        # Search for the competition only if this is a team calendar.
+        if is_team: tournament = _get_match_tournament(match)
         new_matches.append(Match(team1, team2, match_time, tournament))
     return new_matches
 
@@ -96,12 +104,12 @@ def create_calendar(matches, event_length):
     return cal
 
 
-def main(team_id, event_length, *, redis_db={}, freshness=timedelta(days=3)):
+def main(is_team, of_id, event_length, *, redis_db={}, freshness=timedelta(days=3)):
     '''Parse the fixtures page from onefootball into an ics calendar.'''
     cur_date = datetime.now(timezone.utc)
     
     # Get the cached data (if any).
-    data = redis_db.get(team_id)
+    data = redis_db.get(of_id)
     if data: data = loads(data)
     
     # Check if the data exists and is still fresh.
@@ -111,12 +119,12 @@ def main(team_id, event_length, *, redis_db={}, freshness=timedelta(days=3)):
     # Data doesn't exist or isn't fresh, so we'll update it.
     else:
         # Get the page and parse it into beautifulsoup.
-        html = get_page(team_id)
+        html = get_page(is_team, of_id)
         soup = BeautifulSoup(html, 'lxml')
         # Get the new info for the matches.
-        matches = get_matches(soup)
+        matches = get_matches(is_team, soup)
         # Update our cache.
-        redis_db[team_id] = dumps({'matches': matches, 'last_updated': cur_date})
+        redis_db[of_id] = dumps({'matches': matches, 'last_updated': cur_date})
     
     # Create and return a calendar with the matches.
     return create_calendar(matches, event_length)
@@ -124,6 +132,17 @@ def main(team_id, event_length, *, redis_db={}, freshness=timedelta(days=3)):
 
 if __name__ == '__main__':
     # Example values for my use-case :)
-    team_id = 'atletico-mineiro-1683'
+    is_team = True
+    of_id = 'atletico-mineiro-1683'
     event_length = timedelta(hours=2)
-    print(main(team_id, event_length))
+    print('Galo\'s Calendar:')
+    print(main(is_team, of_id, event_length))
+    
+    print()
+    print()
+    
+    is_team = False
+    of_id = 'conmebol-libertadores-76'
+    event_length = timedelta(hours=2, minutes=30)
+    print('Libertadores\' Calendar:')
+    print(main(is_team, of_id, event_length))
