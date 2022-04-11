@@ -107,9 +107,10 @@ def create_calendar(matches, event_length):
 def main(is_team, of_id, event_length, *, redis_db={}, freshness=timedelta(days=3)):
     '''Parse the fixtures page from onefootball into an ics calendar.'''
     cur_date = datetime.now(timezone.utc)
+    lookup_key = f'{"team" if is_team else "comp"}/{of_id}'
     
     # Get the cached data (if any).
-    data = redis_db.get(of_id)
+    data = redis_db.get(lookup_key)
     if data: data = loads(data)
     
     # Check if the data exists and is still fresh.
@@ -124,7 +125,7 @@ def main(is_team, of_id, event_length, *, redis_db={}, freshness=timedelta(days=
         # Get the new info for the matches.
         matches = get_matches(is_team, soup)
         # Update our cache.
-        redis_db[of_id] = dumps({'matches': matches, 'last_updated': cur_date})
+        redis_db[lookup_key] = dumps({'matches': matches, 'last_updated': cur_date})
     
     # Create and return a calendar with the matches.
     return create_calendar(matches, event_length)
