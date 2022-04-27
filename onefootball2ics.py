@@ -87,8 +87,11 @@ def get_matches(is_team, soup):
     # Process each match card individually and create a list of new matches.
     new_matches = []
     for match in matches:
-        match_time = _get_match_datetime(match)
         team1, team2 = _get_match_teams(match)
+        try:
+            match_time = _get_match_datetime(match)
+        except AttributeError:
+            print(f"Skipping match '{team1} vs {team2}' because of invalid time.")
         # Search for the competition only if this is a team calendar.
         if is_team: tournament = _get_match_tournament(match)
         new_matches.append(Match(team1, team2, match_time, tournament))
