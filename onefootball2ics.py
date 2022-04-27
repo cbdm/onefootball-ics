@@ -104,7 +104,7 @@ def create_calendar(matches, event_length):
     return cal
 
 
-def main(is_team, of_id, event_length, *, redis_db={}, freshness=timedelta(days=3)):
+def main(is_team, of_id, event_length, *, redis_db={}, freshness=timedelta(days=1.5)):
     '''Parse the fixtures page from onefootball into an ics calendar.'''
     cur_date = datetime.now(timezone.utc)
     lookup_key = f'{"team" if is_team else "comp"}/{of_id}'
