@@ -92,6 +92,7 @@ def get_matches(is_team, soup):
             match_time = _get_match_datetime(match)
         except AttributeError:
             print(f"Skipping match '{team1} vs {team2}' because of invalid time.")
+            continue
         # Search for the competition only if this is a team calendar.
         if is_team: tournament = _get_match_tournament(match)
         new_matches.append(Match(team1, team2, match_time, tournament))
