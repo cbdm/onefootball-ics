@@ -21,11 +21,11 @@
     <h2>Calendar Integration</h2>
     After you have your OneFootball ID and know your event length, you can use the following URL templates to add it to your calendar:<br/>
     <ul>
-        <li>For a team calendar: {{ url_for('create_team_calendar', team_id='ONEFOOTBALL_ID', event_length='EVENT_LENGTH', _external=True)}}</li>
-        <li>For a competition calendar: {{ url_for('create_competition_calendar', comp_id='ONEFOOTBALL_ID', event_length='EVENT_LENGTH', _external=True)}}</li>
+        <li>For a team calendar: {{ url_for('create_team_calendar', team_id='ONEFOOTBALL_ID', event_length='EVENT_LENGTH', _external=True, _scheme='https')}}</li>
+        <li>For a competition calendar: {{ url_for('create_competition_calendar', comp_id='ONEFOOTBALL_ID', event_length='EVENT_LENGTH', _external=True, _scheme='https')}}</li>
     </ul>
     For example, to get the calendar for Atlético's schedule with the default event length you can use:<br/>
-    <a href="{{ url_for('create_team_calendar', team_id='atletico-mineiro-1683', _external=True)}}">{{ url_for('create_team_calendar', team_id='atletico-mineiro-1683', _external=True)}}</a><br/>
+    <a href="{{ url_for('create_team_calendar', team_id='atletico-mineiro-1683', _external=True, _scheme='https')}}">{{ url_for('create_team_calendar', team_id='atletico-mineiro-1683', _external=True, _scheme='https')}}</a><br/>
     <br/>
     Alternatively, you can download the .ics file and manually import it to your calendar.<br/>
     However, that will not automatically be updated, like the URL should be.
