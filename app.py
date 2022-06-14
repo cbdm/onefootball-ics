@@ -17,12 +17,19 @@ redis_db = Redis(
 @app.route('/', methods=('GET', 'POST'))
 def index():
     if request.method == 'POST':
+        calendar_type = request.form.get('calendar_type', '')
+        if not calendar_type:
+            flash('You must select a valid calendar type; see the help page!')
+            return render_template('index.html')
+
         of_id = request.form.get('onefootball_id', '')
         if not of_id:
             flash('You must provide a OneFootball ID; see the help page!')
             return render_template('index.html')
         
-        event_length = request.form.get('event_length', '120')
+        event_length = request.form.get('event_length', '')
+        if not event_length:
+            event_length = '120'
         if event_length:
             if not event_length.isnumeric():
                 flash('Event length must be a number; see help page!')
