@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} (download){% endblock %}</h1>
+
+    <b>Calendar URL:</b> <a id="calendar_url" href="{{ calendar_url }}">{{ calendar_url }}</a>
+    <button onclick="copyURLToClipboard()">copy</button>
+    <script>
+        function copyURLToClipboard() {
+            var copyText = "{{ calendar_url }}";
+            navigator.clipboard.writeText(copyText).then(() => {
+                // Alert the user that the action took place.
+                // Nobody likes hidden stuff being done under the hood!
+                alert("Copied to clipboard");
+            });
+          }
+    </script>
+    <br/><br/>
+    You can use the above URL to add an external calendar to your app (e.g., Google Calendar) and the calendar should update itself as fixtures change on OneFootball.
+    <br/>
+    Alternatively, you can download the .ics file by clicking the link above and manually import it to your calendar.
+    <u>However</u>, that will not update automatically like the URL should.
+    <br/><br/>
+    <small>
+        Note: if you're using Google calendar, you'll need to go to <a href="https://calendar.google.com/calendar/u/0/syncselect">syncselect</a> to be able to access this calendar on your other devices.
+        Other services might have a similar thing you need to enable.
+    </small>
+{% endblock %}

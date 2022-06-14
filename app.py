@@ -35,13 +35,19 @@ def index():
                 flash('Event length must be a number; see help page!')
                 return render_template('index.html')
         
-        calendar_type = request.form.get('calendar_type')
-        if calendar_type == 'team':
-            return redirect(url_for('create_team_calendar', team_id=of_id, event_length_in_minutes=event_length))
-        else:
-            return redirect(url_for('create_competition_calendar', comp_id=of_id, event_length_in_minutes=event_length))
+        return redirect(url_for('download', calendar_type=calendar_type, onefootball_id=of_id, event_length=event_length))
 
     return render_template('index.html')
+
+
+@app.route('/download/<calendar_type>/<onefootball_id>/<event_length>/')
+def download(calendar_type, onefootball_id, event_length):
+    if calendar_type == 'team':
+        url = url_for('create_team_calendar', team_id=onefootball_id, event_length=event_length, _external=True, _scheme='https')
+    else:
+        url = url_for('create_competition_calendar', comp_id=onefootball_id, event_length=event_length, _external=True, _scheme='https')
+    print(url)
+    return render_template('download.html', calendar_url=url)
 
 
 @app.route('/help/')
