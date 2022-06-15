@@ -4,6 +4,7 @@ from os import getenv
 from datetime import timedelta
 from redis import Redis
 from flask_talisman import Talisman
+from requests import get
 
 app = Flask(__name__)
 app.debug = True
@@ -46,7 +47,10 @@ def download(calendar_type, onefootball_id, event_length):
         url = url_for('create_team_calendar', team_id=onefootball_id, event_length=event_length, _external=True, _scheme='https')
     else:
         url = url_for('create_competition_calendar', comp_id=onefootball_id, event_length=event_length, _external=True, _scheme='https')
-    print(url)
+    test_resp = get(url)
+    if test_resp.status_code != 200:
+        flash(f'Could not find the page for a {"team" if calendar_type == "team" else "competition"} with ID = "{onefootball_id}"')
+        return redirect(url_for('index'))
     return render_template('download.html', calendar_url=url)
 
 
