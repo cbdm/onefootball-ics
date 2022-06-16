@@ -2,18 +2,35 @@ from flask import Flask, flash, make_response, render_template, request, redirec
 from onefootball2ics import main as create_ics
 from os import getenv
 from datetime import timedelta
-from redis import Redis
 from flask_talisman import Talisman
 from requests import get
+from flask_sqlalchemy import SQLAlchemy
+from pymysql import install_as_MySQLdb
+install_as_MySQLdb()
 
 app = Flask(__name__)
 app.debug = True
 app.config['SECRET_KEY'] = getenv('FLASK_SECRET_KEY', 'abc')
-redis_db = Redis(
-                host=getenv('REDIS_ENDPOINT_URI', '127.0.0.1'),
-                port=getenv('REDIS_PORT', '6379'),
-                password=getenv('REDIS_PASSWORD', None)
-                )
+# Connect to the DB.
+db_config = {
+    'host': getenv('DB_HOST', 'localhost'),
+    'port': getenv('DB_PORT', '3306'),
+    'user': getenv('DB_USER', 'user'),
+    'passwd': getenv('DB_PASS', 'pass'),
+    'database': getenv('DB_NAME', 'db')
+}
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{user}:{passwd}@{host}:{port}/{database}'.format(**db_config)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Configure the DB table.
+class MatchList(db.Model):
+    of_id = db.Column(db.String(100), primary_key=True)
+    data = db.Column(db.LargeBinary)
+
+    def __repr__(self):
+        return f'<MatchList {self.of_id}>'
+
 
 @app.route('/', methods=('GET', 'POST'))
 def index():
@@ -66,7 +83,7 @@ def create_team_calendar(team_id, event_length='120'):
     event_length = int(event_length)
     hours = event_length // 60
     minutes = event_length % 60
-    calendar = create_ics(is_team=True, of_id=team_id, event_length=timedelta(hours=hours, minutes=minutes), redis_db=redis_db)
+    calendar = create_ics(is_team=True, of_id=team_id, event_length=timedelta(hours=hours, minutes=minutes), db=db, MatchList=MatchList)
     response = make_response(f'{calendar}')
     response.headers["Content-Disposition"] = "attachment; filename=calendar.ics"
     return response
@@ -79,7 +96,7 @@ def create_competition_calendar(comp_id, event_length='120'):
     event_length = int(event_length)
     hours = event_length // 60
     minutes = event_length % 60
-    calendar = create_ics(is_team=False, of_id=comp_id, event_length=timedelta(hours=hours, minutes=minutes), redis_db=redis_db)
+    calendar = create_ics(is_team=False, of_id=comp_id, event_length=timedelta(hours=hours, minutes=minutes), db=db, MatchList=MatchList)
     response = make_response(f'{calendar}')
     response.headers["Content-Disposition"] = "attachment; filename=calendar.ics"
     return response

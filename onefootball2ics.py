@@ -10,6 +10,29 @@ from datetime import datetime, timedelta, timezone
 from ics import Calendar, Event
 from pickle import loads, dumps
 
+class DummyDB(object):    
+    def __init__(self, of_id, data):
+        self.of_id = of_id
+        self.data = data
+
+    _data = {}
+
+    @staticmethod
+    def get(x):
+        return DummyDB._data.get(x, None)
+
+    @staticmethod
+    def commit():
+        pass
+
+    @staticmethod
+    def add(x):
+        DummyDB._data[x.of_id] = x
+
+DummyDB.query = DummyDB
+DummyDB.session = DummyDB
+
+
 class Match(object):
     '''Object to store the information for a single match from the fixtures list.'''
     def __init__(self, team1, team2, datetime, tournament):
@@ -108,14 +131,14 @@ def create_calendar(matches, event_length):
     return cal
 
 
-def main(is_team, of_id, event_length, *, redis_db={}, freshness=timedelta(days=1.5)):
+def main(is_team, of_id, event_length, *, db=DummyDB, MatchList=DummyDB, freshness=timedelta(days=1.5)):
     '''Parse the fixtures page from onefootball into an ics calendar.'''
     cur_date = datetime.now(timezone.utc)
     lookup_key = f'{"team" if is_team else "comp"}/{of_id}'
     
     # Get the cached data (if any).
-    data = redis_db.get(lookup_key)
-    if data: data = loads(data)
+    record = MatchList.query.get(lookup_key)
+    data = loads(record.data) if record else None
     
     # Check if the data exists and is still fresh.
     if data and data['last_updated'] + freshness >= cur_date:
@@ -129,8 +152,10 @@ def main(is_team, of_id, event_length, *, redis_db={}, freshness=timedelta(days=
         # Get the new info for the matches.
         matches = get_matches(is_team, soup)
         # Update our cache.
-        redis_db[lookup_key] = dumps({'matches': matches, 'last_updated': cur_date})
-    
+        record = MatchList(of_id=lookup_key, data=dumps({'matches': matches, 'last_updated': cur_date}))
+        db.session.add(record)
+        db.session.commit()
+
     # Create and return a calendar with the matches.
     return create_calendar(matches, event_length)
 
