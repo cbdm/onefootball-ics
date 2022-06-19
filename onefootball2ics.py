@@ -152,7 +152,12 @@ def main(is_team, of_id, event_length, *, db=DummyDB, MatchList=DummyDB, freshne
         # Get the new info for the matches.
         matches = get_matches(is_team, soup)
         # Update our cache.
-        record = MatchList(of_id=lookup_key, data=dumps({'matches': matches, 'last_updated': cur_date}))
+        if not record:
+            # Create a new record if the key didn't return a result.
+            record = MatchList(of_id=lookup_key, data=dumps({'matches': matches, 'last_updated': cur_date}))
+        else:
+            # Update existing record if it was just outdated.
+            record.data = dumps({'matches': matches, 'last_updated': cur_date})
         db.session.add(record)
         db.session.commit()
 
