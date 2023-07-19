@@ -11,4 +11,4 @@ You can find the new app at [https://footcal.cbdm.app/](https://footcal.cbdm.app
 This is a webapp to serve the upcoming schedule from a soccer team as an ics calendar.  
 The data is parsed from onefootball's fixtures page, and you should be able to import the generated url directly into google calendar.
 
-It is live at [https://onefootball-ics.cbdm.app/](https://onefootball-ics.cbdm.app/)
+It is live at [https://onefootball-ics.cbdm.app/](https://onefootball-ics.cbdm.app/) and you can check the service status at [status.cbdm.app](https://status.cbdm.app/).
