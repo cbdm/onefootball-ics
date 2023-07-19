@@ -53,6 +53,15 @@
         <a class="nav_bar" href="{{ url_for('help') }}">help</a>
     </nav>
     <hr>
+    <div style="border-width:3px; border-style:solid; border-color:#FF0000; padding: 1em;">
+        <h2>IMPORTANT</h2>
+        I think Onefootball made changes recently to their site that broke the way we were scraping the fixtures page.<br/>
+        Instead of trying to fix this issue for now since it could come back later, I'm developing a new webapp using a different source for data.<br/>
+        So this webapp IS UNMAINTAINED (and likely not working!) if you're reading this message.<br/>
+        <br/>
+        You can find the new app at <a href="https://footcal.cbdm.app/">https://footcal.cbdm.app/</a> and the source at <a href="https://github.com/cbdm/footcal">https://github.com/cbdm/footcal</a>
+    </div>
+    <hr>
     <div class="content">
         {% for message in get_flashed_messages() %}
             <div class="alert">{{ message }}</div>
